@@ -1,25 +1,27 @@
 from flask import Flask, request, redirect, render_template
 from datetime import datetime as dt
+import os
 from api_handlers import get_code_url, get_token, top_artists_cleaner, top_tracks_cleaner, user_top
-
 
 # set up for both local and heroku
 app = Flask(__name__)
-ENV = 'local'
 state = int(dt.utcnow().timestamp())
 scope = 'user-top-read user-read-recently-played user-library-read'
 
 
 # local / heroku specific setup
-if ENV == 'local':
+if os.environ.get("CLIENT_SECRET"):
+    client_id=os.environ['CLIENT_ID']
+    client_secret=os.environ['CLIENT_SECRET']
+    redirect_url = 'heroku'
+else:
     from keys import client_id, client_secret
     port = 5000
     redirect_url = f"http://127.0.0.1:{port}"
     app.debug = True
     app.port = port
     print(state)
-else:
-    redirect_url = 'heroku'
+    
 
 # necessary info for the api
 spotify_api_params = {
