@@ -8,6 +8,7 @@ flask = "*"
 requests = "*"
 datetime = "*"
 gunicorn = "*"
+setuptools = "*"
 
 [dev-packages]
 
