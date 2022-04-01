@@ -13,7 +13,7 @@ scope = 'user-top-read user-read-recently-played user-library-read'
 if os.environ.get("CLIENT_SECRET"):
     client_id=os.environ['CLIENT_ID']
     client_secret=os.environ['CLIENT_SECRET']
-    redirect_url = 'heroku'
+    redirect_url = 'https://spotify-rewrapped-v2.herokuapp.com/'
 else:
     from keys import client_id, client_secret
     port = 5000
