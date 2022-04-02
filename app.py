@@ -65,9 +65,5 @@ def home():
 
     return f"<a href='{get_code_url(spotify_api_params)}'>login</a>"
 
-@app.route("/data")
-def data():
-    return str(spotify_api_params)
-
 if __name__ == "__main__":
     app.run()
