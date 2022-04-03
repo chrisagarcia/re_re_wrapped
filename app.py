@@ -43,27 +43,38 @@ def home():
         
         if not spotify_api_params["token"]:
             token = get_token(spotify_api_params)
-            spotify_api_params["token"] = token
+            # spotify_api_params["token"] = token
+            return redirect(f"/data/{token['access_token']}")
 
-        track_data = top_tracks_cleaner(
-            user_top(
-                spotify_api_params['token']['access_token'],
-                term_choice="short",
-                data_type="tracks"
-                )
-            )
         
-        artist_data = top_artists_cleaner(
-            user_top(
-                spotify_api_params['token']['access_token'],
-                term_choice="short",
-                data_type="artists"
+
+    return f"<a href='{get_code_url(spotify_api_params)}'>login</a>"
+
+# possibly unsafe
+@app.route('/data/<token>')
+def user_data(token):
+
+    if not token:
+        return redirect('/')
+    
+
+    track_data = top_tracks_cleaner(
+        user_top(
+            token,
+            term_choice="short",
+            data_type="tracks"
+            )
+        )
+        
+    artist_data = top_artists_cleaner(
+        user_top(
+            token,
+            term_choice="short",
+            data_type="artists"
             )
         )
 
-        return render_template("data_render.html", tracks=track_data, artists=artist_data)
-
-    return f"<a href='{get_code_url(spotify_api_params)}'>login</a>"
+    return render_template("data_render.html", tracks=track_data, artists=artist_data)
 
 if __name__ == "__main__":
     app.run()
