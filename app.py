@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template
+from flask import Flask, request, redirect, render_template, make_response
 from datetime import datetime as dt
 import os
 from api_handlers import get_code_url, get_token, top_artists_cleaner, top_tracks_cleaner, user_top
@@ -44,18 +44,20 @@ def home():
         if not spotify_api_params["token"]:
             token = get_token(spotify_api_params)
             # spotify_api_params["token"] = token
-            return redirect(f"/data/{token['access_token']}")
+            response = make_response(redirect('/data'))
+            response.set_cookie('token', token['access_token'])
+            return response
 
         
 
     return f"<a href='{get_code_url(spotify_api_params)}'>login</a>"
 
 # possibly unsafe
-@app.route('/data/<token>')
-def user_data(token):
+@app.route('/data')
+def user_data():
 
-    if not token:
-        return redirect('/')
+    
+    token = request.cookies.get('token')
     
 
     track_data = top_tracks_cleaner(
