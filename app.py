@@ -5,7 +5,6 @@ from api_handlers import get_code_url, get_token, top_artists_cleaner, top_track
 
 # set up for both local and heroku
 app = Flask(__name__)
-state = int(dt.utcnow().timestamp())
 scope = 'user-top-read user-read-recently-played user-library-read'
 
 
@@ -20,7 +19,6 @@ else:
     redirect_url = f"http://127.0.0.1:{port}"
     app.debug = True
     app.port = port
-    print(state)
     
 
 # necessary info for the api
@@ -29,13 +27,15 @@ spotify_api_params = {
     "client_secret": client_secret,
     "redirect_url": redirect_url,
     "scope": scope,
-    "state": state,
     "code": "",
     "token": {}
 }
 
 @app.route('/')
 def home():
+
+    # if state is going to be used it must be declared here
+    spotify_api_params["state"] = int(dt.utcnow().timestamp())
 
     if request.args.get('code'):
 
@@ -48,9 +48,11 @@ def home():
             response.set_cookie('token', token['access_token'])
             return response
 
-        
+    login_url = get_code_url(spotify_api_params)
 
-    return f"<a href='{get_code_url(spotify_api_params)}'>login</a>"
+    a = f"<a href='{get_code_url(spotify_api_params)}'>login</a>"
+
+    return render_template('login.html', login_element=a)
 
 # possibly unsafe
 @app.route('/data')
