@@ -1,7 +1,9 @@
 # RE-RE-WRAPPED
 spotify rewrapped project v2
 ---
+Deployment: https://spotify-rewrapped-v2.herokuapp.com/
 
+---
 This project is a retry of an older project: https://github.com/tyler-sanzo/spotify_rewrapped
 
 Goals
