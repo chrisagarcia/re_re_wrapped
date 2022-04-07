@@ -1,7 +1,7 @@
 from flask import Flask, request, redirect, render_template, make_response
 from datetime import datetime as dt
 import os
-from api_handlers import get_code_url, get_token, top_artists_cleaner, top_tracks_cleaner, user_top
+from api_handlers import get_code_url, get_token, get_top_features, top_artists_cleaner, top_tracks_cleaner, user_top
 
 # set up for both local and heroku
 app = Flask(__name__)
@@ -78,7 +78,13 @@ def user_data():
             )
         )
 
-    return render_template("data_render.html", tracks=track_data, artists=artist_data)
+    feature_data = get_top_features(token, track_data)
+
+    return render_template(
+        "data_render.html",
+        tracks=track_data,
+        artists=artist_data,
+        features=feature_data)
 
 if __name__ == "__main__":
     app.run()

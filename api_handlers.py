@@ -1,6 +1,8 @@
 import base64
+from distutils.command.clean import clean
 import requests
 
+# this builds the url for the app to get the code url returns a string
 def get_code_url(param_dict: dict):
 
     parameters = {
@@ -22,6 +24,7 @@ def get_code_url(param_dict: dict):
 
     return url
 
+# builds access token request with user code
 def get_token(param_dict: dict):
 
     url = 'https://accounts.spotify.com/api/token'
@@ -48,6 +51,7 @@ def get_token(param_dict: dict):
 
     return token
 
+# gets top 50 tracks or artists
 def user_top(token, term_choice='short', data_type='tracks'):
     
     if term_choice not in ['short', 'medium', 'long']:
@@ -68,6 +72,21 @@ def user_top(token, term_choice='short', data_type='tracks'):
 
     return response
 
+def get_top_features(token, cleaned_track_data):
+
+    id_list = [track['id'] for track in cleaned_track_data]
+    id_string = '%2C'.join(id_list)
+    url = f"https://api.spotify.com/v1/audio-features?ids={id_string}"
+
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {token}"
+    }
+
+    r = requests.get(url, headers=headers)
+    response = r.json()
+    return response
 
 def top_tracks_cleaner(data):
 	x = []
