@@ -17,38 +17,46 @@
 
 </head>
 <body>
-    
-    <div class="row justify-content-center">
-        <div class="col-8">
-            <h1>Spotify Re-Re-Wrapped</h1>
-        </div>
-    </div>
-    <br>
-    <div class="topList">
+    <div class="container">
         <div class="row justify-content-center">
-            <h2 class="col-4">Top Tracks</h2>
+            <div class="column">
+                <h1 class="display-1">Spotify Re-Re-Wrapped</h1>
+            </div>
         </div>
-        <div class="row justify-content-center">
-            <div class="col-4">
-                <ol id="trackList"></ol>
+        <br>
+        <button class="" onclick="listFill(newSongItem, tracksJSON, trackList, 50)">show 50</button>
+        <div class="topList">
+            <div class="row justify-content-center">
+                <div class="col-4">
+                    <h2 class="display-5">Top Tracks</h2>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-10">
+                    <ol class="" id="trackList"></ol>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-4">
+                    <h2 class="display-5">Top Artists</h2>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-4">
+                    <ol id="artistList"></ol>
+                </div>
             </div>
         </div>
         <div class="row justify-content-center">
-            <h2 class="col-4">Top Artists</h2>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col-4">
-                <ol id="artistList"></ol>
-            </div>
-        </div>
-    </div>
-    <div class="row justify-content-center">
-        <div class="col-4">
-            <div id="histograms">
+            <div class="col-8">
+                <div id="histograms">
 
+                </div>
             </div>
         </div>
     </div>
+
+
 
     <script>
 
@@ -65,6 +73,9 @@
             cover.width = 200;
             cover.height = 200;
             cover.className = "song-image";
+
+            // experimental
+            listItem.className = "card justify-content-right";
 
             song.appendChild(document.createTextNode(individualTrack["song"]));
             artist.appendChild(document.createTextNode(individualTrack["artists"][0]));
@@ -125,12 +136,20 @@
         listFill(newSongItem, tracksJSON, trackList, listLength);
         listFill(newArtistItem, artistsJSON, artistList, listLength);
 
+        // makes a few of the features Histograms
         function histogram(featureData, parent) {
 
             let data = {
                 'key': [],
                 'loudness': [],
-                'tempo': []
+                'tempo': [],
+                'danceability': [],
+                'energy': [],
+                'speechiness': [],
+                'acousticness': [],
+                'instrumentalness': [],
+                'liveness': [],
+                'valence': []
             };
 
             featureData.forEach(track => {
@@ -147,7 +166,6 @@
                 let histogram = document.createElement('DIV');
                 let key = keys[i];
 
-                histBox.appendChild(document.createTextNode(key));
                 histBox.appendChild(histogram);
                 parent.appendChild(histBox);
 
@@ -155,8 +173,14 @@
                     x: data[key],
                     type: 'histogram',
                 };
-
-                Plotly.newPlot(histogram, [trace]);
+                
+                let layout = {
+                    bargroupgap: 0.01, 
+                    title: (key.charAt(0).toUpperCase() + key.slice(1)), 
+                    xaxis: {title: "Value"}, 
+                    yaxis: {title: "Count"}
+                };
+                Plotly.newPlot(histogram, [trace], layout);
 
             };
         };

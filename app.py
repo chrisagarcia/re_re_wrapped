@@ -50,11 +50,9 @@ def home():
 
     login_url = get_code_url(spotify_api_params)
 
-    a = f"<a href='{get_code_url(spotify_api_params)}'>login</a>"
+    return render_template('login.html', login_element=login_url)
 
-    return render_template('login.html', login_element=a)
-
-# possibly unsafe
+# token is stored in cookies and sent to this page
 @app.route('/data')
 def user_data():
 
