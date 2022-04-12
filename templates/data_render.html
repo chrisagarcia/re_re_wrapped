@@ -19,29 +19,43 @@
 <body style="background-color:#F2F2F2;">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="column">
+            <div class="col-8">
                 <h1 class="display-1">Spotify Re-Re-Wrapped</h1>
             </div>
         </div>
         <br>
         <div class="topList">
             <div class="row justify-content-center">
-                <div class="col-4">
-                    <h2 class="display-4">Top Tracks</h2>
+                <div class="col-5 my-3">
+                    <div class="row">
+                        <div class="col-9 float-left">
+                            <h2 class="display-4">Top Tracks</h2>
+                        </div>
+                        <div class="col-3 float-right">
+                            <button id="tracks-more-button" class="btn btn-outline-dark" 
+                            onclick="resetter('trackList');rollingFill(true);">Show More</button>        
+                        </div>
+                    </div>
                 </div>
             </div>
-            <button id="tracks-more-button" class="" onclick="resetter('trackList');rollingFill(true);">Show More</button>
             <div class="row justify-content-center">
                 <div class="col-5">
                     <table class="" id="trackList"></table>
                 </div>
             </div>
             <div class="row justify-content-center">
-                <div class="col-4">
-                    <h2 class="display-5">Top Artists</h2>
+                <div class="col-5 my-3">
+                    <div class="row">
+                        <div class="col-9 float-left">
+                            <h2 class="display-5">Top Artists</h2>
+                        </div>
+                        <div class="col-3 float-right">
+                            <button id="artists-more-button" class="btn btn-outline-dark"
+                            onclick="resetter('artistList');rollingFill(false)">Show More</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <button id="artists-more-button" class="" onclick="resetter('artistList');rollingFill(false)">Show More</button>
             <div class="row justify-content-center">
                 <div class="col-5">
                     <table id="artistList"></table>
@@ -49,7 +63,7 @@
             </div>
         </div>
         <div class="row justify-content-center">
-            <div class="col-4">
+            <div class="col-5">
                 <div id="histograms"></div>
             </div>
         </div>
@@ -94,14 +108,6 @@
                     button.textContent = "Show More"
                 };
             }
-        };
-
-        function listFill(listItemFunction, jsonData, parentContainer, listLength) {
-            
-            for (let i = 0; i < listLength; i++) {
-                listItemFunction(jsonData[i], parentContainer);
-            };
-
         };
         
         function trackCell (individualTrack) {
@@ -229,14 +235,8 @@
             };
         };
 
-
-        // i want this to be done with a button at some point
-        let listLength = 10;
-        tableFill(trackCell, tracksJSON, trackTable, listLength);
-        tableFill(artistCell, artistsJSON, artistTable, listLength);
-
-         // defines the json data coming from python
-         const tracksJSON = JSON.parse('{{ tracks | tojson | safe}}');
+        // defines the json data coming from python
+        const tracksJSON = JSON.parse('{{ tracks | tojson | safe}}');
         const artistsJSON = JSON.parse('{{ artists | tojson | safe}}');
         const featuresJSON = JSON.parse('{{ features | tojson | safe }}');
 
@@ -244,6 +244,11 @@
         const trackTable = document.getElementById("trackList");
         const artistTable = document.getElementById("artistList");
         const histogramDiv = document.getElementById("histograms");
+
+        // i want this to be done with a button at some point
+        let listLength = 10;
+        tableFill(trackCell, tracksJSON, trackTable, listLength);
+        tableFill(artistCell, artistsJSON, artistTable, listLength);
 
         histogram(featuresJSON.audio_features, histogramDiv);
 
