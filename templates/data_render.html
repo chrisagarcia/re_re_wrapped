@@ -16,7 +16,7 @@
     <script src="https://cdn.plot.ly/plotly-2.11.1.min.js"></script>
 
 </head>
-<body>
+<body style="background-color:#F2F2F2;">
     <div class="container">
         <div class="row justify-content-center">
             <div class="column">
@@ -24,16 +24,16 @@
             </div>
         </div>
         <br>
-        <button class="" onclick="listFill(newSongItem, tracksJSON, trackList, 50)">show 50</button>
         <div class="topList">
             <div class="row justify-content-center">
                 <div class="col-4">
-                    <h2 class="display-5">Top Tracks</h2>
+                    <h2 class="display-4">Top Tracks</h2>
                 </div>
             </div>
+            <button id="tracks-more-button" class="" onclick="resetter('trackList');rollingFill(true);">Show More</button>
             <div class="row justify-content-center">
-                <div class="col-10">
-                    <ol class="" id="trackList"></ol>
+                <div class="col-5">
+                    <table class="" id="trackList"></table>
                 </div>
             </div>
             <div class="row justify-content-center">
@@ -41,17 +41,16 @@
                     <h2 class="display-5">Top Artists</h2>
                 </div>
             </div>
+            <button id="artists-more-button" class="" onclick="resetter('artistList');rollingFill(false)">Show More</button>
             <div class="row justify-content-center">
-                <div class="col-4">
-                    <ol id="artistList"></ol>
+                <div class="col-5">
+                    <table id="artistList"></table>
                 </div>
             </div>
         </div>
         <div class="row justify-content-center">
-            <div class="col-8">
-                <div id="histograms">
-
-                </div>
+            <div class="col-4">
+                <div id="histograms"></div>
             </div>
         </div>
     </div>
@@ -60,39 +59,89 @@
 
     <script>
 
-        // defines the process for adding a new list item to tracks
-        function newSongItem(individualTrack, parentElement) {
-            let listItem = document.createElement("li");
-            let cover = document.createElement("img");
-            let song = document.createElement("div");
-            let artist = document.createElement("div");
+        function resetter (id) {
+            let element = document.getElementById(id);
+
+            while (element.firstElementChild) {
+                element.firstElementChild.remove();
+            }
+
+        };
+
+        function rollingFill (track) {
+            
+            if (track) {
+
+                let button = document.getElementById('tracks-more-button');
+
+                if (button.textContent === "Show More") {
+                    tableFill(trackCell, tracksJSON, trackTable, 50);
+                    button.textContent = "Show Less";
+                } else  if (button.textContent === "Show Less") {
+                    tableFill(trackCell, tracksJSON, trackTable, 10);
+                    button.textContent = "Show More"
+                };
+                
+            } else {
+
+                let button = document.getElementById('artists-more-button');
+
+                if (button.textContent === "Show More") {
+                    tableFill(artistCell, artistsJSON, artistTable, 50);
+                    button.textContent = "Show Less";
+                } else  if (button.textContent === "Show Less") {
+                    tableFill(artistCell, artistsJSON, artistTable, 10);
+                    button.textContent = "Show More"
+                };
+            }
+        };
+
+        function listFill(listItemFunction, jsonData, parentContainer, listLength) {
+            
+            for (let i = 0; i < listLength; i++) {
+                listItemFunction(jsonData[i], parentContainer);
+            };
+
+        };
+        
+        function trackCell (individualTrack) {
+            let cell = document.createElement("TD");
+            let cellContainer = document.createElement("DIV");
+            let cover = document.createElement("IMG");
+            let textContainer = document.createElement("DIV");
+            let song = document.createElement("SPAN");
+            let artist = document.createElement("P");
 
             cover.src = individualTrack["img"];
 
-            // image styling
+            // styling
             cover.width = 200;
             cover.height = 200;
-            cover.className = "song-image";
+            cover.className = "album-art";
 
-            // experimental
-            listItem.className = "card justify-content-right";
+            let trackString = individualTrack["song"].slice(0, 25);
 
-            song.appendChild(document.createTextNode(individualTrack["song"]));
+            song.appendChild(document.createTextNode(trackString));
             artist.appendChild(document.createTextNode(individualTrack["artists"][0]));
 
-            listItem.appendChild(cover);
-            listItem.appendChild(song);
-            listItem.appendChild(artist);
+            textContainer.appendChild(song);
+            textContainer.appendChild(artist);
 
-            parentElement.appendChild(listItem);
+            cellContainer.appendChild(cover);
+            cellContainer.appendChild(textContainer);
+
+            cell.appendChild(cellContainer);
+
+            return cell
         };
 
-        // defines list item for artists
-        function newArtistItem(individualArtist, parentElement) {
-            let listItem = document.createElement("li");
-            let cover = document.createElement("img");
-            let artist = document.createElement("div");
-            let popularity = document.createElement("div");
+        function artistCell (individualArtist) {
+            let cell = document.createElement("TD");
+            let cellContainer = document.createElement("DIV");
+            let cover = document.createElement("IMG");
+            let textContainer = document.createElement("DIV");
+            let artist = document.createElement("SPAN");
+            let popularity = document.createElement("p");
 
             cover.src = individualArtist["img"];
 
@@ -101,40 +150,35 @@
             cover.height = 200;
             cover.className = "artist-image";
             
+            // adding text
             artist.appendChild(document.createTextNode(individualArtist["artist"]));
             popularity.appendChild(document.createTextNode("Popularity: " + individualArtist["popularity"]));
-
-
-            listItem.appendChild(cover);
-            listItem.appendChild(artist);
-            listItem.appendChild(popularity);
-
-            parentElement.appendChild(listItem);
-        };
-
-
-        // defines the json data coming from python
-        const tracksJSON = JSON.parse('{{ tracks | tojson | safe}}');
-        const artistsJSON = JSON.parse('{{ artists | tojson | safe}}');
-        const featuresJSON = JSON.parse('{{ features | tojson | safe }}');
-
-        // defines parent containers
-        const trackList = document.getElementById("trackList");
-        const artistList = document.getElementById("artistList");
-        const histogramDiv = document.getElementById("histograms");
-
-        function listFill(listItemFunction, jsonData, parentContainer, listLength) {
             
-            for (let i = 0; i < listLength; i++) {
-                listItemFunction(jsonData[i], parentContainer)
-            };
+            textContainer.appendChild(artist);
+            textContainer.appendChild(popularity);
+            cellContainer.append(cover);
+            cellContainer.appendChild(textContainer);
+            cell.appendChild(cellContainer);
 
+            return cell
         };
 
-        // i want this to be done with a button at some point
-        let listLength = 10;
-        listFill(newSongItem, tracksJSON, trackList, listLength);
-        listFill(newArtistItem, artistsJSON, artistList, listLength);
+        function tableFill(cellFiller, jsonData, parentContainer, listLength) {
+
+            for (let i=0; i<listLength; i++) {
+                if (jsonData[i]) {
+
+                    if (i % 3 === 0) {
+                        var row = document.createElement("TR");
+                        parentContainer.appendChild(row);
+                    };
+
+                    // fill in the list function parameters
+                    let cell = cellFiller(jsonData[i]);
+                    row.appendChild(cell);
+                };
+            };
+        };
 
         // makes a few of the features Histograms
         function histogram(featureData, parent) {
@@ -184,6 +228,22 @@
 
             };
         };
+
+
+        // i want this to be done with a button at some point
+        let listLength = 10;
+        tableFill(trackCell, tracksJSON, trackTable, listLength);
+        tableFill(artistCell, artistsJSON, artistTable, listLength);
+
+         // defines the json data coming from python
+         const tracksJSON = JSON.parse('{{ tracks | tojson | safe}}');
+        const artistsJSON = JSON.parse('{{ artists | tojson | safe}}');
+        const featuresJSON = JSON.parse('{{ features | tojson | safe }}');
+
+        // defines parent containers
+        const trackTable = document.getElementById("trackList");
+        const artistTable = document.getElementById("artistList");
+        const histogramDiv = document.getElementById("histograms");
 
         histogram(featuresJSON.audio_features, histogramDiv);
 
