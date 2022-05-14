@@ -94,8 +94,8 @@ def top_tracks_cleaner(data):
 
 	for i in s:
 		x.append({
-        	'song': i['name'],
-            'album': i['album']['name'],
+        	'song': i['name'],   #.replace(r'[', 'u'*5).replace(r']', 'y'*5),
+            'album': i['album']['name'].replace('"', "'"),
             'artists': [artist['name'] for artist in i['artists']],
             'id': i['id'],
             'popularity': i['popularity'],
